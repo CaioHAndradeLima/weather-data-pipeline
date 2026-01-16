@@ -1,0 +1,44 @@
+
+# IDE
+.idea
+.DS_Store
+
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment
+.env
+
+# Airflow
+infra/local/airflow/logs/
+infra/local/airflow/.airflow/
+infra/local/airflow/__pycache__/
+infra/local/airflow/.airflow-logs
+
+# Docker
+docker-data/
+*.log
+
+# Terraform Snowflake
+infra/remote/snowflake/.terraform/
+infra/remote/snowflake/terraform.tfstate
+infra/remote/snowflake/terraform.tfstate.backup
+infra/remote/snowflake/terraform.tfvars
+
+# Terraform AWS postgres
+infra/remote/aws/postgres/.terraform/
+infra/remote/aws/postgres/terraform.tfstate
+infra/remote/aws/postgres/terraform.tfstate.backup
+infra/remote/aws/postgres/terraform.tfvars
+
