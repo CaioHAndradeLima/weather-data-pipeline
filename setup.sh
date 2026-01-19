@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-
 echo "Setting up local environment for Retail Data Pipeline"
 echo ""
 
@@ -58,6 +57,10 @@ ask "POSTGRES_DB"       "Postgres database"
 echo ""
 echo "Airflow security"
 ask "AIRFLOW_FERNET_KEY" "Airflow Fernet key (generate if you don't have one)"
+
+echo ""
+PROJECT_ROOT_DIRECTORY="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+echo "PROJECT_ROOT=$PROJECT_ROOT_DIRECTORY" >> .env
 
 echo ""
 echo ".env file successfully created!"

@@ -23,7 +23,7 @@ resource "snowflake_table" "bronze_order_events" {
   column {
     name     = "ORDER_ID"
     type     = "STRING"
-    nullable = false
+    nullable = true
   }
 
   column {

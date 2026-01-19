@@ -20,6 +20,9 @@ venv/
 # Environment
 .env
 
+# infra
+/infra/local/containers_init_log.txt
+
 # Airflow
 infra/local/airflow/logs/
 infra/local/airflow/.airflow/
@@ -42,3 +45,5 @@ infra/remote/aws/postgres/terraform.tfstate
 infra/remote/aws/postgres/terraform.tfstate.backup
 infra/remote/aws/postgres/terraform.tfvars
 
+#aws user credentials
+infra/remote/aws/terraform-user-keys

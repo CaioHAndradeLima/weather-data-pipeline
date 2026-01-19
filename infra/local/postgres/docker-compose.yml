@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: postgres:14
+    container_name: local-postgres
+    restart: always
+
+    command:
+      - "postgres"
+      - "-c"
+      - "wal_level=logical"
+      - "-c"
+      - "max_replication_slots=10"
+      - "-c"
+      - "max_wal_senders=10"
+
+    environment:
+      POSTGRES_DB: retail_prod
+      POSTGRES_USER: retail_user
+      POSTGRES_PASSWORD: retail_password
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - postgres_data_cdc:/var/lib/postgresql/data
+      - ${PROJECT_ROOT}/infra/local/postgres/init:/docker-entrypoint-initdb.d
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U retail_user -d retail_prod"]
+      interval: 10s
+      retries: 5
+
+volumes:
+  postgres_data_cdc:

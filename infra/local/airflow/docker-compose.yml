@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  postgres:
+  postgres-airflow:
     image: postgres:13
     environment:
       POSTGRES_USER: airflow
@@ -16,23 +16,41 @@ services:
       retries: 5
     restart: always
 
-  airflow-webserver:
-    env_file:
-      - ../../.env
+  airflow-init:
     build:
-      context: ../../..          # project root
+      context: ${PROJECT_ROOT}
       dockerfile: infra/local/airflow/Dockerfile
     depends_on:
-      postgres:
+      postgres-airflow:
         condition: service_healthy
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres-airflow/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    command: >
+      bash -c "
+      airflow db migrate &&
+      airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com;
+      "
+
+  airflow-webserver:
+    env_file:
+      - ${PROJECT_ROOT}/.env
+    build:
+      context: ${PROJECT_ROOT}
+      dockerfile: infra/local/airflow/Dockerfile
+    depends_on:
+      postgres-airflow:
+        condition: service_healthy
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres-airflow/airflow
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__CORE__FERNET_KEY: ""
       AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "true"
     volumes:
-      - ../../../airflow/dags:/opt/airflow/dags
+      - ${PROJECT_ROOT}/airflow/dags:/opt/airflow/dags
+      - ${PROJECT_ROOT}/src:/opt/airflow/dags/src
       - airflow-logs:/opt/airflow/logs
 
     ports:
@@ -42,26 +60,27 @@ services:
 
   airflow-scheduler:
     env_file:
-      - ../../.env
+      - ${PROJECT_ROOT}/.env
     build:
-      context: ../../..          # project root
+      context: ${PROJECT_ROOT}
       dockerfile: infra/local/airflow/Dockerfile
     command: scheduler
     depends_on:
-      postgres:
+      postgres-airflow:
         condition: service_healthy
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres-airflow/airflow
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__CORE__FERNET_KEY: ""
     volumes:
-      - ../../../airflow/dags:/opt/airflow/dags
-      - .airflow-logs:/opt/airflow/logs
-      - validation:/opt/airflow/validation
-
+      - ${PROJECT_ROOT}/airflow/dags:/opt/airflow/dags
+      - ${PROJECT_ROOT}/src:/opt/airflow/dags/src
+      - airflow-logs:/opt/airflow/logs
+      - ${PROJECT_ROOT}/infra/local/airflow/validation:/opt/airflow/validation
     restart: always
 
 volumes:
   postgres-db-volume:
   airflow-logs:
+  validation:
