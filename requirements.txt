@@ -1,16 +1,17 @@
-# --- Core Data Stack (Pinned for Stability) ---
-# Bumped to 3.12.x to ensure Linux wheels are available
-snowflake-connector-python==3.12.3
-snowflake-sqlalchemy==1.6.1
+# Snowflake - Bumped for compatibility with modern pyarrow wheels
+snowflake-connector-python==3.10.0
+snowflake-sqlalchemy==1.5.1
 
-# Pandas 2.2+ works better with newer PyArrow
-pandas==2.2.2
-numpy==1.26.4
-pyarrow==17.0.0
-
-# --- Environment & Config ---
-python-dotenv==1.0.1
-structlog==24.1.0
-
-# --- Optional/Future ---
+# Kafka
 confluent-kafka==2.3.0
+
+# Data handling - pinned to versions with stable wheels
+pandas==2.1.4
+pyarrow==14.0.2
+numpy==1.26.4
+
+# Environment variables
+python-dotenv==1.0.1
+
+# Logging / utils
+structlog==24.1.0
