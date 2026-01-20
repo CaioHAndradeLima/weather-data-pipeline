@@ -67,7 +67,7 @@ def snowflake_bulk_insert_order_events(events: list) -> None:
             MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE
             """
         )
-    except Exception as e:
+    except Exception:
         logger.exception("Snowflake ingestion failed")
         raise
 
