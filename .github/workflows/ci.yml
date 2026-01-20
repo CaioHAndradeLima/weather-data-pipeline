@@ -45,25 +45,17 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
       
           export CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-2.8.1/constraints-3.11.txt"
-      
+
           # 1. Clean any existing Airflow
-          pip uninstall -y apache-airflow || true
+          #pip uninstall -y apache-airflow || true
       
           # 2. Install Airflow WITH correct constraints
+          export CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-2.8.1/constraints-3.11.txt"
+
           pip install "apache-airflow[postgres]==2.8.1" \
             --constraint "${CONSTRAINT_URL}"
-      
-          # 3. Install project dependencies USING SAME constraints
+
           pip install -r requirements.txt \
-            --constraint "${CONSTRAINT_URL}"
-      
-          # 4. Install dev tools (also constrained)
-          pip install \
-            pytest \
-            ruff \
-            black \
-            dbt-core \
-            dbt-snowflake \
             --constraint "${CONSTRAINT_URL}"
       
           # 5. Install local package
