@@ -38,7 +38,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.11.9"
 
       - name: Install dependencies
         run: |
@@ -46,8 +46,7 @@ jobs:
           
           pip install numpy --user --no-cache;
           
-          # Define the constraints URL for Airflow 2.8.1 and Python 3.10
-          export CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-2.8.1/constraints-3.10.txt"
+          export CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-2.8.1/constraints-3.11.9.txt"
       
           # 1. Uninstall any pre-existing airflow to avoid conflicts
           pip uninstall -y apache-airflow || true
