@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: bronze
+    database: RETAIL_ANALYTICS
+    schema: BRONZE
+    tables:
+      - name: ORDER_EVENTS
+      - name: PAYMENT_EVENTS
+      - name: SHIPMENT_EVENTS
+      - name: CUSTOMERS_SNAPSHOT
+      - name: PRODUCTS_SNAPSHOT

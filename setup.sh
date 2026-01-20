@@ -24,6 +24,7 @@ ask() {
   fi
 
   echo "$var_name=$value" >> "$ENV_FILE"
+  export "$var_name=$value"
 }
 
 # Backup existing .env
@@ -73,3 +74,36 @@ echo "RETAIL_PG_PASSWORD=retail_password" >> .env
 echo ""
 echo ".env file successfully created!"
 
+echo ""
+echo "Setting up dbt profile and snowflake dbt"
+python -m pip install dbt-core dbt-snowflake
+
+DBT_DIR="dbt"
+DBT_PROFILES_FILE="$DBT_DIR/profiles.yml"
+
+# Create ~/.dbt if it doesn't exist
+mkdir -p "$DBT_DIR"
+
+# Backup existing profiles.yml if present
+if [ -f "$DBT_PROFILES_FILE" ]; then
+  cp "$DBT_PROFILES_FILE" "$DBT_PROFILES_FILE.bak.$(date +%s)"
+  echo "Existing dbt profiles.yml backed up"
+fi
+
+cat > "$DBT_PROFILES_FILE" <<EOF
+retail_pipeline:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: $SNOWFLAKE_ACCOUNT
+      user: $SNOWFLAKE_USER
+      password: $SNOWFLAKE_PASSWORD
+      role: $SNOWFLAKE_ROLE
+      warehouse: $SNOWFLAKE_WAREHOUSE
+      database: $SNOWFLAKE_DATABASE
+      schema: SILVER
+      threads: 4
+EOF
+
+echo "dbt profile created at ~/.dbt/profiles.yml"

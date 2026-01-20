@@ -47,3 +47,6 @@ infra/remote/aws/postgres/terraform.tfvars
 
 #aws user credentials
 infra/remote/aws/terraform-user-keys
+
+# dbt
+dbt/logs

@@ -1,0 +1,13 @@
+retail_pipeline:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: YS80657.us-east-2.aws
+      user: TERRAFORM_USER
+      password: STRONG_P@SSW0RD123
+      role: TERRAFORM_ROLE
+      warehouse: RETAIL_WH
+      database: RETAIL_ANALYTICS
+      schema: SILVER
+      threads: 4

@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: customers_current
+    description: "Latest snapshot of each customer"
+    columns:
+      - name: customer_id
+        description: "Primary key of the customer"
+        tests:
+          - not_null
+          - unique
+
+      - name: name
+        description: "Customer full name"
+        tests:
+          - not_null
+
+      - name: email
+        description: "Customer email"
+        tests:
+          - not_null
+
+      - name: last_snapshot_date
+        description: "Date of the latest snapshot"
+        tests:
+          - not_null
