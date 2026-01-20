@@ -62,6 +62,10 @@ jobs:
           pip install -e .
       # Python quality
       # ---------------------------
+      - name: Install dev tools
+        run: |
+          pip install ruff black
+
       - name: Lint with ruff
         run: ruff check .
 
