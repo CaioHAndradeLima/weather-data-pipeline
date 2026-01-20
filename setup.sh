@@ -62,6 +62,14 @@ echo ""
 PROJECT_ROOT_DIRECTORY="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "PROJECT_ROOT=$PROJECT_ROOT_DIRECTORY" >> .env
 
+
+# Postgres retail (CDC + incremental reads)
+echo "RETAIL_PG_HOST=local-postgres" >> .env
+echo "RETAIL_PG_PORT=5432" >> .env
+echo "RETAIL_PG_DB=retail_prod" >> .env
+echo "RETAIL_PG_USER=retail_user" >> .env
+echo "RETAIL_PG_PASSWORD=retail_password" >> .env
+
 echo ""
 echo ".env file successfully created!"
 
