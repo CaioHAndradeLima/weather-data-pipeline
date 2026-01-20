@@ -1,6 +1,7 @@
+import logging
+
 from src.ingestion.kafka.consumer import read_from_kafka
 from src.snowflake.writer import write_to_snowflake
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -25,4 +26,3 @@ def consume_and_write_orders():
         messages=messages,
     )
     logger.info("Successfully wrote events to Snowflake and committed offsets")
-

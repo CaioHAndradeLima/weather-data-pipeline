@@ -1,13 +1,14 @@
-from confluent_kafka import Consumer
 import json
+
+from confluent_kafka import Consumer
 
 
 def read_from_kafka(
-    topic: str,
-    bootstrap_servers="kafka:29092",
-    group_id="airflow-bronze-consumer",
-    max_messages=10000,
-    max_empty_polls=5,
+        topic: str,
+        bootstrap_servers="kafka:29092",
+        group_id="airflow-bronze-consumer",
+        max_messages=10000,
+        max_empty_polls=5,
 ):
     consumer = Consumer({
         "bootstrap.servers": bootstrap_servers,

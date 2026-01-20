@@ -1,12 +1,12 @@
 import base64
 import json
+import logging
 import tempfile
 import uuid
 from datetime import datetime, timezone
 from decimal import Decimal
 
 from src.snowflake.connection import get_snowflake_connection
-import logging
 
 logger = logging.getLogger(__name__)
 
