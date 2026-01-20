@@ -37,28 +37,22 @@ jobs:
 
       - name: Install dependencies
         env:
-          # Tells snowflake-connector NOT to try compiling its own Arrow C++
-          SKIP_ARROW_BUILD: 1
+          SKIP_ARROW_BUILD: 1  # Crucial for Snowflake connector
         run: |
-          # 1. Upgrade core packaging tools
+          # 1. Prepare environment
           python -m pip install --upgrade pip setuptools wheel
 
-          # 2. Force install pre-compiled binaries for the problematic core libs
-          pip install --only-binary :all: numpy==1.26.4 pyarrow==14.0.2
-
-          # 3. Install Snowflake connector WITHOUT build isolation
-          # This forces it to use the numpy/pyarrow we just installed above
-          pip install --only-binary :all: --no-build-isolation snowflake-connector-python==3.10.0
-
-          # 4. Install remaining project requirements using binaries where possible
-          pip install --prefer-binary -r requirements.txt
-
-          # 5. Install Airflow using official constraints to prevent dependency drift
+          # 2. Define Airflow constraints to act as a 'safety net'
           export CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-2.8.1/constraints-3.10.txt"
-          pip install "apache-airflow[postgres]==2.8.1" --constraint "${CONSTRAINT_URL}"
 
-          # 6. Install dev tools and local package
-          pip install --prefer-binary pytest ruff black dbt-core dbt-snowflake
+          # 3. SINGLE-SHOT INSTALL
+          # We pass the requirements and the constraints together.
+          # '--only-binary :all:' forbids pip from ever trying to compile C code.
+          pip install --only-binary :all: \
+            --constraint "${CONSTRAINT_URL}" \
+            -r requirements.txt
+
+          # 4. Install the local project in editable mode
           pip install -e .
 
       - name: Lint and Format
@@ -85,7 +79,6 @@ jobs:
           dag_folder = os.path.join(os.getcwd(), 'airflow/dags')
           dagbag = DagBag(dag_folder=dag_folder, include_examples=False)
           if dagbag.import_errors:
-              print("Import Errors found:")
               for filename, errors in dagbag.import_errors.items():
                   print(f"File: {filename}\nErrors: {errors}")
               exit(1)

@@ -1,17 +1,25 @@
-# Snowflake - Bumped for compatibility with modern pyarrow wheels
-snowflake-connector-python==3.10.0
-snowflake-sqlalchemy==1.5.1
-
-# Kafka
-confluent-kafka==2.3.0
-
-# Data handling - pinned to versions with stable wheels
-pandas==2.1.4
-pyarrow==14.0.2
+# --- Core Data Stack (Compatible with Snowflake/Arrow) ---
 numpy==1.26.4
+pyarrow==14.0.2
+pandas==2.1.4
 
-# Environment variables
+# --- Snowflake ---
+snowflake-connector-python==3.12.3
+snowflake-sqlalchemy==1.6.1
+
+# --- Transformation (Pinned to prevent backtracking) ---
+dbt-core==1.7.18
+dbt-snowflake==1.7.3
+
+# --- Orchestration ---
+apache-airflow==2.8.1
+
+# --- Utilities ---
+confluent-kafka==2.3.0
 python-dotenv==1.0.1
-
-# Logging / utils
 structlog==24.1.0
+
+# --- Dev Tools ---
+pytest==8.0.0
+ruff==0.1.9
+black==24.1.1
