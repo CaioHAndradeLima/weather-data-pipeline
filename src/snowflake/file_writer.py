@@ -1,4 +1,4 @@
-from src.snowflake.bulk_insert import snowflake_bulk_insert_order_events
+from src.snowflake.loader import snowflake_bulk_insert
 
 
 def write_to_snowflake(consumer, events, messages):
@@ -6,7 +6,7 @@ def write_to_snowflake(consumer, events, messages):
         return
 
     # Write to Snowflake
-    snowflake_bulk_insert_order_events(events)
+    snowflake_bulk_insert(events)
 
     # Commit Kafka offsets ONLY if Snowflake succeeded
     consumer.commit(asynchronous=False)

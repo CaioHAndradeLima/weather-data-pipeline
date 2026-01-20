@@ -1,7 +1,7 @@
 import logging
 
-from src.ingestion.kafka.consumer import read_from_kafka
-from src.snowflake.writer import write_to_snowflake
+from src.ingestion.postgres.kafka.cdc_consumer import read_from_kafka
+from src.snowflake.file_writer import write_to_snowflake
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,6 @@ def consume_and_write_orders():
         consumer.close()
         return
 
-    # Writes to Snowflake and commits offsets ONLY if success
     write_to_snowflake(
         consumer=consumer,
         events=events,

@@ -3,7 +3,7 @@ from datetime import datetime
 from airflow.operators.python import PythonOperator
 
 from airflow import DAG
-from src.ingestion.kafka.consume_and_write_orders import consume_and_write_orders
+from src.ingestion.postgres.cdc.orders_cdc_consumer import consume_and_write_orders
 
 with DAG(
     dag_id="bronze_kafka_order_events",
