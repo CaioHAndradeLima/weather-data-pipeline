@@ -42,30 +42,31 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          
-          pip install numpy --user --no-cache;
-          
-          export CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-2.8.1/constraints-3.11.9.txt"
+          python -m pip install --upgrade pip setuptools wheel
       
-          # 1. Uninstall any pre-existing airflow to avoid conflicts
+          export CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-2.8.1/constraints-3.11.txt"
+      
+          # 1. Clean any existing Airflow
           pip uninstall -y apache-airflow || true
       
-          # 2. Install Airflow with constraints (this handles Flask-Session automatically)
-          pip install "apache-airflow[postgres]==2.8.1" --constraint "${CONSTRAINT_URL}"
+          # 2. Install Airflow WITH correct constraints
+          pip install "apache-airflow[postgres]==2.8.1" \
+            --constraint "${CONSTRAINT_URL}"
       
-          # 3. Install your specific project requirements
-          pip install -r requirements.txt
+          # 3. Install project dependencies USING SAME constraints
+          pip install -r requirements.txt \
+            --constraint "${CONSTRAINT_URL}"
       
-          # 4. Install dev tools and other integrations
+          # 4. Install dev tools (also constrained)
           pip install \
             pytest \
             ruff \
             black \
             dbt-core \
-            dbt-snowflake
+            dbt-snowflake \
+            --constraint "${CONSTRAINT_URL}"
       
-          # 5. Install local package if applicable
+          # 5. Install local package
           pip install -e .
       # Python quality
       # ---------------------------

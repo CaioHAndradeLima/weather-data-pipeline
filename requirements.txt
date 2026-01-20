@@ -1,6 +1,7 @@
 # Snowflake
 snowflake-connector-python==3.6.0
 snowflake-sqlalchemy==1.5.1
+numpy==1.26.4
 
 # Kafka (optional, for later)
 confluent-kafka==2.3.0
