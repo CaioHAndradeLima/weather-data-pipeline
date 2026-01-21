@@ -1,7 +1,7 @@
 retail_pipeline:
-  target: dev
+  target: prod
   outputs:
-    dev:
+    prod:
       type: snowflake
       account: YS80657.us-east-2.aws
       user: TERRAFORM_USER
