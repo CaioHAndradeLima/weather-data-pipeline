@@ -13,3 +13,5 @@ snowsql -a YS80657.us-east-2.aws \
         -d RETAIL_ANALYTICS \
         -s BRONZE \
         -o log_level=DEBUG
+
+        Otr@conta1Health

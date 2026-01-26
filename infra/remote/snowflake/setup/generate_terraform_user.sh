@@ -11,7 +11,7 @@ echo "User: TERRAFORM_USER"
 echo "Password: STRONG_P@SSW0RD123"
 echo "Role: TERRAFORM_ROLE"
 
-echo "use terraform apply to create snowflake infra"
+echo ""
 
 
 
