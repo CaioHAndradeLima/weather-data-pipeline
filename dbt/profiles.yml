@@ -6,8 +6,8 @@ retail_pipeline:
       account: YS80657.us-east-2.aws
       user: CAIOHANDRADELIMA
       password: Otr@conta1Health
-      role: 
-      warehouse: 
-      database: 
+      role: ACCOUNTADMIN
+      warehouse: RETAIL_WH
+      database: RETAIL_ANALYTICS
       schema: SILVER
       threads: 4

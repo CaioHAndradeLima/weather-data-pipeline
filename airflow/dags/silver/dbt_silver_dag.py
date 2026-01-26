@@ -9,7 +9,7 @@ from airflow.models import Variable
 # -------------------------------------------------------
 DBT_PROJECT_DIR = "/opt/airflow/dbt"
 DBT_PROFILES_DIR = "/opt/airflow/dbt"
-DBT_TARGET = Variable.get("dbt_target", default_var="prod")
+DBT_TARGET = Variable.get("dbt_target", default_var="dev")
 
 DEFAULT_ARGS = {
     "owner": "data-engineering",

@@ -4,7 +4,10 @@ echo "Setting up local environment for Retail Data Pipeline"
 echo ""
 
 ENV_FILE=".env"
-
+SNOWFLAKE_WAREHOUSE=RETAIL_WH
+SNOWFLAKE_DATABASE=RETAIL_ANALYTICS
+SNOWFLAKE_ROLE=ACCOUNTADMIN
+SNOWFLAKE_SCHEMA=BRONZE
 # Helper function to ask for input
 ask() {
   local var_name=$1
@@ -46,10 +49,10 @@ ask "SNOWFLAKE_ACCOUNT"   "Snowflake account (example: YS80657.us-east-2.aws)"
 ask "SNOWFLAKE_USER"      "Snowflake user"
 ask "SNOWFLAKE_PASSWORD"  "Snowflake password" true
 
-echo "SNOWFLAKE_WAREHOUSE=RETAIL_WH" >> .env
-echo "SNOWFLAKE_DATABASE=RETAIL_ANALYTICS" >> .env
-echo "SNOWFLAKE_ROLE=ACCOUNTADMIN" >> .env
-echo "SNOWFLAKE_SCHEMA=BRONZE" >> .env
+echo "SNOWFLAKE_WAREHOUSE=$RETAIL_WH" >> .env
+echo "SNOWFLAKE_DATABASE=$RETAIL_ANALYTICS" >> .env
+echo "SNOWFLAKE_ROLE=$ACCOUNTADMIN" >> .env
+echo "SNOWFLAKE_SCHEMA=$BRONZE" >> .env
 
 
 echo ""
@@ -173,6 +176,8 @@ cd $PROJECT_ROOT_DIRECTORY/infra/local
 chmod +x start_containers.sh
 ./start_containers.sh
 
+echo ""
+echo ""
 echo "Login in airflow using account: admin password: admin"
-sleep 10
+sleep 20
 open http://localhost:8081/home
