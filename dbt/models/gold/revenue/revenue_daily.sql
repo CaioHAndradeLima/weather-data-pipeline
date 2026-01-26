@@ -1,3 +1,7 @@
+{{ config(
+    schema = 'gold'
+) }}
+
 select
     date_trunc('day', last_updated_at) as revenue_date,
     sum(order_total) as total_revenue
