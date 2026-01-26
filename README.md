@@ -1,25 +1,32 @@
-# retail-data-pipeline
+# Retail Data Pipeline
 
 [![Retail Data Pipeline](https://github.com/CaioHAndradeLima/retail-data-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/CaioHAndradeLima/retail-data-pipeline/actions/workflows/ci.yml)
 
-<h1> Data Pipeline Architecture </h1>
+## Overview
 
-This project simulate a retail pipeline containing a RDS AWS database as production and the following questions to answer:
+This project simulates a real-world retail data platform using a hybrid **local + cloud** architecture. It demonstrates
+how to ingest, process, and analyze retail data using both **batch ingestion** and **Change Data Capture (CDC)**,
+following the **Medallion Architecture (Bronze, Silver, Gold)** on Snowflake.
 
-* How many orders are created per day?
-* How much revenue are we generating?
-* What is the order conversion rate?
-* Which products generate the most revenue?
-* What percentage of orders are canceled or refunded?
-* How long does it take for an order to move from created → shipped → delivered?
+The platform is designed to answer typical business questions such as:
 
-in addition, we have CDC enabled for order table in RDS, all other table should be consumed using batch approach.
+- How many orders are created per day?
+- How much revenue is generated?
+- What is the order conversion rate?
+- Which products generate the most revenue?
+- What percentage of orders are canceled or refunded?
+- How long does it take for an order to move from created to shipped to delivered?
 
+CDC is enabled for the `orders` table in the OLTP database. All other tables are ingested using a batch approach.
 
-``````
+---
+
+## High-Level Architecture
+
+```
                      ┌──────────────────────┐
                      │   Source Systems     │
-                     │ Postgree OLTP / CDC  │
+                     │ Postgres OLTP / CDC  │
                      └──────────┬───────────┘
                                 |
           ┌─────────────────────┴─────────────────────┐
@@ -54,84 +61,99 @@ in addition, we have CDC enabled for order table in RDS, all other table should 
 └──────────┬──────────────┘
            |
        BI / Analytics
-``````
+```
 
-<h1> Snowflake Lake House </h1>
+---
 
-we're using Snowflake to save data using medallion architecture (bronze,silver,gold).
+## Snowflake Lakehouse and Medallion Architecture
 
-| Layer                          | Tool                         |
-| ------------------------------ |------------------------------|
-| Infra (schemas, tables, roles) | Bash + Terraform + Snowflake |
-| Ingestion (raw data)           | Python + Airflow             |
-| Transformations                | dbt                          |
-| Analytics                      | Power BI                     |
-| Storage / Compute              | Snowflake                    |
+Snowflake is used as the analytical lakehouse, structured using the Medallion Architecture:
 
-You can create all Snowflake structure only using the ./setup.sh file in the project.
+| Layer  | Responsibility                   | Tooling         |
+|--------|----------------------------------|-----------------|
+| Bronze | Raw data ingestion (batch + CDC) | Python, Airflow |
+| Silver | Cleansed and normalized data     | dbt             |
+| Gold   | Business-ready marts and metrics | dbt             |
+| Infra  | Warehouses, schemas, roles       | Terraform, Bash |
+| BI     | Analytics and reporting          | Power BI        |
 
+All Snowflake infrastructure (databases, schemas, warehouses, roles) can be created automatically using the `setup.sh`
+script.
 
-<h1> Infrastructure overview: Infra as a code </h1>
+---
 
-This project uses a hybrid local + cloud infrastructure to simulate and run a real-world data platform with CDC, Kafka, Airflow, and a Medallion architecture on Snowflake.
+## Infrastructure Overview (Infrastructure as Code)
 
-``` yml
+This project uses a hybrid infrastructure model:
+
+- **Local environment**: fully containerized simulation of a production data platform
+- **Remote environment (AWS)**: Snowflake analytics platform
+
+```
 infra/
 ├── local/        # Local development & simulation environment
-├── snowflake/    # Analytics platform (Medallion architecture)
+├── snowflake/    # Snowflake analytics platform (Medallion architecture)
 └── remote/       # Cloud infrastructure (AWS)
 ```
 
-The local environment is used to simulate a production-like data platform entirely on Docker.
-It includes:
-OLTP database with CDC enabled
-Kafka + Debezium
-Airflow for orchestration
-Sample data generation
+### Local Environment
 
-``` yml
+The local environment runs entirely on Docker and includes:
+
+- PostgreSQL OLTP database with CDC enabled
+- Kafka and Zookeeper
+- Debezium for CDC
+- Airflow for orchestration
+- Sample data initialization
+
+```
 infra/local/
 ├── airflow/
-│   ├── util/                       # util scripts
-│   ├── validation/                 # validation dag files script
+│   ├── util/                       # Utility scripts
+│   ├── validation/                 # Validation DAGs
 │   ├── docker-compose.yml
 │   ├── Dockerfile
-│   └── init_connections.sh         # add snowflake connection whenever it launch
+│   └── init_connections.sh         # Snowflake connection bootstrap
 │
 ├── postgres/
 │   └── init/
-│       ├── 01_wal_level_setup.sql  # set wal_level = logical
-│       ├── 02_init_retail_oltp.sql # create tables
-│       ├── 03_data.sql             # insert mock data into tables
-│       ├── 04_cdc.sql              # enable cdc
-│       └── 05_debezium_user.sql    # set up Debezium role for CDC Kafka events
+│       ├── 01_wal_level_setup.sql
+│       ├── 02_init_retail_oltp.sql
+│       ├── 03_data.sql
+│       ├── 04_cdc.sql
+│       └── 05_debezium_user.sql
 │
 ├── kafka/
 │   ├── connectors/
-│   │   ├── debezium-postgres.json  # Debezium set up
-│   │   └── register.sh             # Script to register .json into Debezium
+│   │   ├── debezium-postgres.json
+│   │   └── register.sh
 │   └── docker-compose.yml
 │
-├── start_containers.sh             # start all local infra
-├── stop_containers.sh              # stop all local infra
-└── insert_new_order.sh             # use to test CDC
+├── start_containers.sh
+├── stop_containers.sh
+└── insert_new_order.sh
 ```
 
-<h1> Snowflake Analytics platform (Medallion) </h1>
-This folder defines the Snowflake environment that supports the Bronze / Silver / Gold layers.
-Responsibilities
-Create databases and schemas
-Define Bronze tables (events & snapshots)
-Configure warehouses
-Manage roles, grants, and permissions
-Prepare the platform for dbt transformations
+---
 
-``` yml
+## Snowflake Analytics Platform (Terraform)
+
+This module defines all Snowflake resources required to support the Medallion Architecture.
+
+Responsibilities:
+
+- Create databases and schemas
+- Configure warehouses
+- Define Bronze tables (batch and CDC)
+- Manage roles, grants, and permissions
+- Prepare the environment for dbt transformations
+
+```
 infra/snowflake/
 ├── setup/
-│   ├── generate_terraform_user.sh  # generate Snowflake Terraform user
-│   ├── install_local_cli.sh        # Install Snowflake CLI locally
-│   └── roles.sql                   # Snowflake SQL Query to create the Terraform Role
+│   ├── generate_terraform_user.sh
+│   ├── install_local_cli.sh
+│   └── roles.sql
 │
 ├── bronze_tables_events.tf
 ├── bronze_tables_snapshots.tf
@@ -143,65 +165,75 @@ infra/snowflake/
 └── versions.tf
 ```
 
-<h1> How to run this project locally: </h1>
+---
 
-The project was made to run it only executing a setup.sh script. 
-The script will be responsible for guarantee your current environment is working as expected and do not require complex set up.
+## Running the Project Locally
 
-you just need create a Snowflake account or use your current one.
+The entire project is designed to run using a single bootstrap script.
 
-Requirements: 
-* Mac OS Environment
-* Docker installed and running 
-* Brew installed 
-* Snowflake CLI installed (brew install --cask snowflake-snowsql)
-* Python installed
-* PIP installed
+### Requirements
 
-whenever you have all requirements you only need run to create Snowflake remote environment and run the local development environment via Docker
+- macOS
+- Docker (installed and running)
+- Homebrew
+- Python
+- pip
+- Snowflake account
 
-``` bash
+### Execution
+
+```bash
 chmod +x setup.sh
 ./setup.sh
 ```
 
+The script performs the following steps:
 
-<h1> Updates </h1>
+1. Validates local prerequisites
+2. Creates Snowflake infrastructure using Terraform
+3. Bootstraps Snowflake users and roles
+4. Starts the local Docker-based environment
+5. Launches Airflow and supporting services
 
-Currently the project is running and catching CDC events through local Python code, this is not the best approach and we should have a tool to deal with CDC without native code such as Airbyte/kafka-connect cluster.
-Below we can see the advances/disvantagens native Python to capture events against a cloud tool such as Airbyte.
+---
 
-| Feature            | Current Python / Airflow Approach                         | High-Standard Approach (Kafka Connect)               |
-|--------------------|------------------------------------------------------------|------------------------------------------------------|
-| Duplicate Handling | Depends on Kafka commits (risk of duplicates)              | Exactly-once delivery via Snowflake Pipe             |
-| Complexity         | Low (custom Python logic)                                  | Medium (requires Airbyte)                            |
-| Latency            | Batch-based (data processed when Airflow runs)             | Near real-time (seconds)                             |
-| CDC Handling       | Hard to handle Debezium `DELETE` and update events          | Native support for CDC schemas (Debezium-compatible) |
+## CDC Implementation Notes
 
+Currently, CDC events are consumed using custom Python code orchestrated by Airflow. While functional, this approach has
+limitations compared to managed CDC tools.
 
+| Feature            | Python + Airflow                   | Kafka Connect / Airbyte         |
+|--------------------|------------------------------------|---------------------------------|
+| Duplicate handling | Manual logic                       | Built-in exactly-once semantics |
+| Latency            | Micro-batch                        | Near real-time                  |
+| Complexity         | Low                                | Medium                          |
+| CDC semantics      | Manual handling of updates/deletes | Native Debezium support         |
 
-<h1> DBT execution </h1>
+A future improvement would be migrating CDC ingestion to Kafka Connect or Airbyte.
 
-Currently the project is running DBT using CLI-based dbt orchestration method. Below we can see the difference between the Task-per-model and CLI-based.
+---
 
+## dbt Execution Strategy
 
-| Aspect                    | **Approach A — CLI-based dbt orchestration** | ** dbt Cosmos (Task-per-model)**            |
-| ------------------------- |----------------------------------------------|---------------------------------------------|
-| Orchestration unit        | dbt commands (`dbt run`, `dbt test`)         | Individual dbt models and tests             |
-| Airflow complexity        | Low                                          | High                                        |
-| Setup effort              | Minimal                                      | Moderate to high                            |
-| Learning curve            | Easy                                         | Steep                                       |
-| dbt dependency handling   | Fully handled by dbt                         | Reflected in Airflow DAG                    |
-| Airflow DAG size          | Small and clean                              | Large and dynamic                           |
-| Observability in Airflow  | Limited (command-level)                      | Excellent (model-level)                     |
-| Failure granularity       | Pipeline-level failure                       | Model-level failure                         |
-| Retry strategy            | Retry full dbt run                           | Retry failed models only                    |
-| Debugging                 | Simple (CLI logs)                            | Requires understanding Cosmos internals     |
-| Local development         | Very easy                                    | More complex                                |
-| CI/CD friendliness        | Excellent                                    | Good but heavier                            |
-| Scalability               | High                                         | Very high                                   |
-| Operational overhead      | Low                                          | Medium to high                              |
-| Best for                  | Startups, mid-size teams, portfolio projects | Mature data platforms, analytics-heavy orgs |
-| Industry adoption         | most common                                  | (growing, but niche)                        |
-| Recommended as first step | Yes                                          | No                                          |
-| Migration path            | Easy → Cosmos later                          | Hard to downgrade                           |
+This project uses **CLI-based dbt orchestration** instead of task-per-model orchestration.
+
+| Aspect              | CLI-based dbt                 | dbt Cosmos            |
+|---------------------|-------------------------------|-----------------------|
+| DAG complexity      | Low                           | High                  |
+| Setup effort        | Minimal                       | Moderate to high      |
+| Failure granularity | Pipeline-level                | Model-level           |
+| Observability       | Limited                       | High                  |
+| Local development   | Simple                        | More complex          |
+| CI/CD friendliness  | High                          | Moderate              |
+| Recommended for     | Portfolio, small to mid teams | Mature data platforms |
+
+The chosen approach prioritizes simplicity, portability, and ease of local development, with a clear migration path to
+dbt Cosmos if needed.
+
+---
+
+## Project Status
+
+The project is fully functional and demonstrates end-to-end ingestion, transformation, and analytics using both batch
+and CDC data flows. Ongoing improvements focus on hardening CDC ingestion and improving observability.
+
