@@ -1,3 +1,6 @@
+{{ config(
+    schema = 'gold'
+) }}
 select
     o.order_id,
 

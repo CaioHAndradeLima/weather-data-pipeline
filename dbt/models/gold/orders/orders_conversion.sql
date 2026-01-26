@@ -1,3 +1,7 @@
+{{ config(
+    schema = 'gold'
+) }}
+
 select
     date_trunc('day', o.last_updated_at) as order_date,
 

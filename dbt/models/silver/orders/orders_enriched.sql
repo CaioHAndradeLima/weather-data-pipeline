@@ -1,3 +1,5 @@
+{{ config(schema='silver') }}
+
 select
     o.order_id,
     o.order_status,
