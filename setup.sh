@@ -49,10 +49,10 @@ ask "SNOWFLAKE_ACCOUNT"   "Snowflake account (example: YS80657.us-east-2.aws)"
 ask "SNOWFLAKE_USER"      "Snowflake user"
 ask "SNOWFLAKE_PASSWORD"  "Snowflake password" true
 
-echo "SNOWFLAKE_WAREHOUSE=$RETAIL_WH" >> .env
-echo "SNOWFLAKE_DATABASE=$RETAIL_ANALYTICS" >> .env
-echo "SNOWFLAKE_ROLE=$ACCOUNTADMIN" >> .env
-echo "SNOWFLAKE_SCHEMA=$BRONZE" >> .env
+echo "SNOWFLAKE_WAREHOUSE=$SNOWFLAKE_WAREHOUSE" >> .env
+echo "SNOWFLAKE_DATABASE=$SNOWFLAKE_DATABASE" >> .env
+echo "SNOWFLAKE_ROLE=$SNOWFLAKE_ROLE" >> .env
+echo "SNOWFLAKE_SCHEMA=$SNOWFLAKE_SCHEMA" >> .env
 
 
 echo ""
@@ -104,7 +104,6 @@ retail_pipeline:
       role: $SNOWFLAKE_ROLE
       warehouse: $SNOWFLAKE_WAREHOUSE
       database: $SNOWFLAKE_DATABASE
-      schema: SILVER
       threads: 4
 EOF
 
