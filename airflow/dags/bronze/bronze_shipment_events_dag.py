@@ -3,6 +3,7 @@ from datetime import datetime
 from airflow import DAG
 from airflow.models import Variable
 from airflow.operators.python import PythonOperator
+from airflow.operators.empty import EmptyOperator
 
 from src.ingestion.postgres.incremental.shipment_reader import (
     fetch_updated_shipments,
@@ -32,7 +33,12 @@ with DAG(
     max_active_runs=1,
     tags=["bronze", "postgres", "shipments"],
 ) as dag:
+    start = EmptyOperator(task_id="start")
+    end = EmptyOperator(task_id="end")
+
     ingest_task = PythonOperator(
         task_id="ingest_shipment_events",
         python_callable=ingest_shipments,
     )
+
+    start >> ingest_task >> end

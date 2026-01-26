@@ -3,6 +3,7 @@ from datetime import datetime
 from airflow import DAG
 from airflow.models import Variable
 from airflow.operators.python import PythonOperator
+from airflow.operators.empty import EmptyOperator
 
 from src.ingestion.postgres.incremental.payment_reader import (
     fetch_updated_payments,
@@ -37,3 +38,6 @@ with DAG(
         task_id="ingest_payment_events",
         python_callable=ingest_payments,
     )
+    start = EmptyOperator(task_id="start")
+    end = EmptyOperator(task_id="end")
+    start >> ingest_task >> end

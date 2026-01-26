@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.models import Variable
+from airflow.operators.empty import EmptyOperator
 
 # -------------------------------------------------------
 # Config
@@ -30,6 +31,9 @@ with DAG(
     catchup=False,
     tags=["dbt", "bronze", "snowflake"],
 ) as dag:
+
+    start = EmptyOperator(task_id="start")
+    end = EmptyOperator(task_id="end")
 
     # ---------------------------------------------------
     # dbt deps
@@ -74,4 +78,4 @@ with DAG(
     # ---------------------------------------------------
     # Task dependencies
     # ---------------------------------------------------
-    dbt_deps >> dbt_run_bronze >> dbt_test_bronze
+    start >> dbt_deps >> dbt_run_bronze >> dbt_test_bronze >> end

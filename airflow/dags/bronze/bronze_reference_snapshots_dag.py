@@ -2,6 +2,7 @@ from datetime import datetime
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.operators.empty import EmptyOperator
 
 from src.ingestion.postgres.snapshot.snapshot_reader import fetch_table
 from src.ingestion.postgres.snapshot.snapshot_mapper import (
@@ -26,7 +27,10 @@ with DAG(
     max_active_runs=1,
     tags=["bronze", "snapshot", "reference"],
 ) as dag:
+    start = EmptyOperator(task_id="start")
+    end = EmptyOperator(task_id="end")
     ingest_task = PythonOperator(
         task_id="ingest_reference_snapshots",
         python_callable=ingest_snapshots,
     )
+    start >> ingest_task >> end
