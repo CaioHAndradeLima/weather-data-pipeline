@@ -1,5 +1,9 @@
--- Create publication for all tables
-DROP PUBLICATION IF EXISTS retail_cdc_pub;
+DROP PUBLICATION IF EXISTS airbyte_publication;
 
-CREATE PUBLICATION retail_cdc_pub
+CREATE PUBLICATION airbyte_publication
 FOR TABLE retail.orders;
+
+SELECT pg_create_logical_replication_slot(
+  'airbyte_slot',
+  'pgoutput'
+);

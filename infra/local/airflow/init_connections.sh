@@ -33,4 +33,14 @@ airflow connections add snowflake_retail \
     \"role\": \"$SNOWFLAKE_ROLE\"
   }"
 
+
+
+echo "Connecting airbyte"
+
+airflow connections delete airbyte_conn || true
+
+airflow connections add airbyte_conn \
+  --conn-type http \
+  --conn-host "http://host.docker.internal:8001"
+
 echo "Airflow connections created successfully."

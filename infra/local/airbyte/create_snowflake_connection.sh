@@ -37,6 +37,9 @@ if [ -z "$WORKSPACE_ID" ] || [ "$WORKSPACE_ID" = "null" ]; then
 fi
 
 echo "WORKSPACE_ID=$WORKSPACE_ID"
+# save workspace id into .env
+sed -i.bak '/^WORKSPACE_ID=/d' "$ENV_FILE"
+echo "WORKSPACE_ID=$WORKSPACE_ID" >> $ENV_FILE
 
 # ---------------------------------------------------
 # 2. Snowflake destinationDefinitionId (CONFIG API)
@@ -97,4 +100,6 @@ fi
 echo ""
 echo "Snowflake destination created successfully"
 echo "DESTINATION_ID=$DESTINATION_ID"
-echo "SNOWFLAKE_DESTINATION_ID=$DESTINATION_ID" >> ENV_FILE
+# Remove existing POSTGRES_SOURCE_ID if present
+sed -i.bak '/^SNOWFLAKE_DESTINATION_ID=/d' "$ENV_FILE"
+echo "SNOWFLAKE_DESTINATION_ID=$DESTINATION_ID" >> $ENV_FILE

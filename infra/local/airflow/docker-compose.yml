@@ -31,7 +31,7 @@ services:
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     command: >
       bash -c "
-      airflow db migrate && airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com && chmod +x /opt/airflow/init_connections.sh; /opt/airflow/init_connections.sh;
+      airflow db migrate && airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com && chmod +x /opt/airflow/init_connections.sh && /opt/airflow/init_connections.sh;
       "
     volumes:
       - ${PROJECT_ROOT}/infra/local/airflow/init_connections.sh:/opt/airflow/init_connections.sh

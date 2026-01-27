@@ -6,7 +6,6 @@ set -euo pipefail
 # ---------------------------------------------------
 ENV_FILE="../../../.env"
 AIRBYTE_BASE="http://localhost:8000/api/v1"
-WORKSPACE_ID="1c09d0f7-0652-420d-b99b-50b1d0622e52"
 TABLES_FILE="tables.json"
 
 # ---------------------------------------------------

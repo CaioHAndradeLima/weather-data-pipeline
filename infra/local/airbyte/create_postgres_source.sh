@@ -107,4 +107,9 @@ fi
 echo ""
 echo "Postgres CDC source created successfully"
 echo "SOURCE_ID=$SOURCE_ID"
-echo "POSTGRES_SOURCE_ID=$SOURCE_ID" >> ENV_FILE
+
+# Remove existing POSTGRES_SOURCE_ID if present
+sed -i.bak '/^POSTGRES_SOURCE_ID=/d' "$ENV_FILE"
+
+echo "POSTGRES_SOURCE_ID=$SOURCE_ID" >> "$ENV_FILE"
+rm -f "${ENV_FILE}.bak" # remove backup file created by sed (macOS)
