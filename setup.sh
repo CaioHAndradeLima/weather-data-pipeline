@@ -61,6 +61,9 @@ echo "POSTGRES_USER=airflow" >> .env
 echo "POSTGRES_PASSWORD=airflow" >> .env
 echo "POSTGRES_DB=airflow" >> .env
 
+# aibyte
+echo "AIRBYTE_API_URL=http://host.docker.internal:8000/api/v1" >> .env
+
 # important for Kubernetes/ Databricks
 #ask "AIRFLOW_FERNET_KEY" "Airflow Fernet key (generate if you don't have one)"
 echo "AIRFLOW_FERNET_KEY=not_key" >> .env
@@ -95,6 +98,7 @@ retail_pipeline:
       role: $SNOWFLAKE_ROLE
       warehouse: $SNOWFLAKE_WAREHOUSE
       database: $SNOWFLAKE_DATABASE
+      database: BRONZE
       threads: 4
 EOF
 
