@@ -73,14 +73,14 @@ CREATE_RESPONSE=$(curl -s -X POST "$AIRBYTE_BASE/api/v1/destinations/create" \
     "workspaceId": "'"$WORKSPACE_ID"'",
     "destinationDefinitionId": "'"$SNOWFLAKE_DEF_ID"'",
     "connectionConfiguration": {
-      "host": "YS80657.us-east-2.aws.snowflakecomputing.com",
-      "warehouse": "RETAIL_WH",
-      "database": "RETAIL_ANALYTICS",
-      "schema": "BRONZE",
-      "role": "ACCOUNTADMIN",
-      "username": "CAIOHANDRADELIMA",
+      "host": "'"$SNOWFLAKE_ACCOUNT"'.snowflakecomputing.com",
+      "warehouse": "'"$SNOWFLAKE_WAREHOUSE"'",
+      "database": "'"$SNOWFLAKE_DATABASE"'",
+      "schema": "'"$SNOWFLAKE_SCHEMA"'",
+      "role": "'"$SNOWFLAKE_ROLE"'",
+      "username": "'"$SNOWFLAKE_USER"'",
       "credentials": {
-        "password": "Otr@conta1Health",
+        "password": "'"$SNOWFLAKE_PASSWORD"'",
         "auth_type": "Username and Password"
       },
       "cdc_deletion_mode": "Hard delete"

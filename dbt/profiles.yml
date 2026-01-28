@@ -9,5 +9,5 @@ retail_pipeline:
       role: ACCOUNTADMIN
       warehouse: RETAIL_WH
       database: RETAIL_ANALYTICS
-      database: BRONZE
+      schema: BRONZE
       threads: 4
