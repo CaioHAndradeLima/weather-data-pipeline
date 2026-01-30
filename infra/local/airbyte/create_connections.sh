@@ -7,15 +7,11 @@ set -euo pipefail
 ENV_FILE="../../../.env"
 AIRBYTE_BASE="http://localhost:8000/api/v1"
 TABLES_FILE="tables.json"
+AUTH_HEADER=$(./login.sh)
 
 # ---------------------------------------------------
 # Load env vars
 # ---------------------------------------------------
-if [ ! -f "$ENV_FILE" ]; then
-  echo "ERROR: .env file not found at $ENV_FILE"
-  exit 1
-fi
-
 echo "Loading env vars from $ENV_FILE"
 set -a
 source "$ENV_FILE"
@@ -41,6 +37,7 @@ echo "Discovering source schema..."
 
 DISCOVER_RESPONSE=$(curl -s -X POST "$AIRBYTE_BASE/sources/discover_schema" \
   -H "Content-Type: application/json" \
+  -H "$AUTH_HEADER" \
   -d "{\"sourceId\":\"$SOURCE_ID\"}")
 
 if ! echo "$DISCOVER_RESPONSE" | jq -e '.catalog.streams' >/dev/null; then
@@ -105,6 +102,7 @@ for i in $(seq 0 $((CONNECTION_COUNT - 1))); do
   # ---------------------------------------------------
   EXISTING=$(curl -s -X POST "$AIRBYTE_BASE/connections/list" \
     -H "Content-Type: application/json" \
+    -H "$AUTH_HEADER" \
     -d "{\"workspaceId\":\"$WORKSPACE_ID\"}")
 
   CONNECTION_ID=$(echo "$EXISTING" | jq -r \
@@ -118,6 +116,7 @@ for i in $(seq 0 $((CONNECTION_COUNT - 1))); do
 
     CREATE_RESPONSE=$(curl -s -X POST "$AIRBYTE_BASE/connections/create" \
       -H "Content-Type: application/json" \
+      -H "$AUTH_HEADER" \
       -d "{
         \"name\": \"$CONNECTION_NAME\",
         \"workspaceId\": \"$WORKSPACE_ID\",
@@ -139,6 +138,7 @@ for i in $(seq 0 $((CONNECTION_COUNT - 1))); do
 
     curl -s -X POST "$AIRBYTE_BASE/connections/update" \
       -H "Content-Type: application/json" \
+      -H "$AUTH_HEADER" \
       -d "{
         \"connectionId\": \"$CONNECTION_ID\",
         \"syncCatalog\": { \"streams\": $STREAMS }

@@ -5,6 +5,8 @@ from airflow.decorators import dag, task
 from airflow.models import Variable
 from airflow.models.param import Param
 from dotenv import load_dotenv
+from airflow.providers.airbyte.operators.airbyte import AirbyteTriggerSyncOperator
+from airflow.providers.airbyte.sensors.airbyte import AirbyteJobSensor
 
 from src.ingestion.airbyte.client import AirbyteClient
 from src.ingestion.airbyte.discovery import discover_connections
@@ -19,6 +21,7 @@ load_dotenv()
     catchup=False,
     tags=["bronze", "airbyte"],
     max_active_tasks=2,
+    default_args={"owner": "airflow"},
     params={
         "tables": Param(
             default=[],
@@ -41,15 +44,24 @@ def postgres_to_snowflake_bronze():
         connections = discover_connections(client, tables)
         return [c["connectionId"] for c in connections]
 
-    @task
-    def sync(connection_id: str):
-        client = AirbyteClient(
-            base_url=os.getenv("AIRBYTE_API_URL"),
-            workspace_id=os.getenv("WORKSPACE_ID"),
-        )
-        sync_connection(client, connection_id)
+    connection_ids = list_connections()
 
-    sync.expand(connection_id=list_connections())
+    airbyte_sync = AirbyteTriggerSyncOperator.partial(
+        task_id="airbyte_sync",
+        airbyte_conn_id="airbyte_default",
+        asynchronous=True,
+    ).expand(
+        connection_id=connection_ids
+    )
+
+    airbyte_sensor = AirbyteJobSensor.partial(
+        task_id="airbyte_sensor",
+        airbyte_conn_id="airbyte_default",
+    ).expand(
+        airbyte_job_id=airbyte_sync.output
+    )
+
+    airbyte_sync >> airbyte_sensor
 
 
 dag = postgres_to_snowflake_bronze()

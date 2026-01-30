@@ -21,7 +21,7 @@ CDC is enabled for the `orders` table in the OLTP database. All other tables are
 
 ---
 
-# 🚀 Data Platform – Automated Postgres → Snowflake Pipeline
+# Data Platform – Automated Postgres → Snowflake Pipeline
 
 This project implements a **fully automated, scalable ELT data platform** using **Postgres, Airbyte, Airflow, dbt, and Snowflake**.
 
@@ -31,7 +31,7 @@ The core idea is simple:
 
 ---
 
-## 🧠 High-Level Architecture
+## High-Level Architecture
 
 ```
                      ┌──────────────────────┐
@@ -75,7 +75,7 @@ The core idea is simple:
 
 ---
 
-## 🔁 Execution Flow (End-to-End)
+## Execution Flow (End-to-End)
 
 ```
 Postgres
@@ -100,10 +100,10 @@ dbt (Silver & Gold)
 
 ---
 
-## 📂 Repository Structure
+## Local infra Structure
 
 ```
-.
+infra
 ├── airbyte/
 │   ├── brew_install_airbyte_abctl.sh
 │   ├── start_airbyte.sh
@@ -130,20 +130,7 @@ dbt (Silver & Gold)
 
 ---
 
-## ⚙️ Fully Automated Setup
-
-### 1️⃣ Infrastructure Startup
-
-```bash
-./start_containers.sh
-```
-
-This will:
-- Start **Postgres**
-- Start **Airbyte**
-- Start **Airflow**
-
----
+## Fully Automated Setup
 
 ### 2️⃣ Automatic Postgres Source Creation (CDC)
 
@@ -164,7 +151,7 @@ Example:
 }
 ```
 
-➡️ No manual UI steps required.
+No manual UI steps required at all.
 
 ---
 
@@ -205,14 +192,14 @@ Example output:
 }
 ```
 
-🧠 **To add a new table:**
-- Add it to Postgres
-- Re-run the script
+
+**To add a new table:**
+- Add it to Postgres and re-run the script or add a new item into the `tables.json` file
 - Done.
 
 ---
 
-### 5️⃣ Connection Creation (Mass-Scale)
+### Connection Creation (Mass-Scale)
 
 `create_connections.sh`:
 
@@ -269,19 +256,19 @@ Airflow can trigger dbt runs after ingestion.
 
 ---
 
-## 🌟 Key Benefits
+## Key Benefits
 
-✅ Fully automated
+Fully automated
 
-✅ Declarative table management
+Declarative table management
 
-✅ Scales to hundreds of tables
+Scales to hundreds of tables
 
-✅ No Airbyte UI dependency
+No Airbyte UI dependency
 
-✅ Production-ready CDC
+Production-ready CDC
 
-✅ Clear separation of concerns
+Clear separation of concerns
 
 ---
 
@@ -339,47 +326,6 @@ infra/
 ├── snowflake/    # Snowflake analytics platform (Medallion architecture)
 └── remote/       # Cloud infrastructure (AWS)
 ```
-
-### Local Environment
-
-The local environment runs entirely on Docker and includes:
-
-- PostgreSQL OLTP database with CDC enabled
-- Kafka and Zookeeper
-- Debezium for CDC
-- Airflow for orchestration
-- Sample data initialization
-
-```
-infra/local/
-├── airflow/
-│   ├── util/                       # Utility scripts
-│   ├── validation/                 # Validation DAGs
-│   ├── docker-compose.yml
-│   ├── Dockerfile
-│   └── init_connections.sh         # Snowflake connection bootstrap
-│
-├── postgres/
-│   └── init/
-│       ├── 01_wal_level_setup.sql
-│       ├── 02_init_retail_oltp.sql
-│       ├── 03_data.sql
-│       ├── 04_cdc.sql
-│       └── 05_debezium_user.sql
-│
-├── kafka/
-│   ├── connectors/
-│   │   ├── debezium-postgres.json
-│   │   └── register.sh
-│   └── docker-compose.yml
-│
-├── start_containers.sh
-├── stop_containers.sh
-└── insert_new_order.sh
-```
-
----
-
 ## Snowflake Analytics Platform (Terraform)
 
 This module defines all Snowflake resources required to support the Medallion Architecture.
@@ -388,7 +334,6 @@ Responsibilities:
 
 - Create databases and schemas
 - Configure warehouses
-- Define Bronze tables (batch and CDC)
 - Manage roles, grants, and permissions
 - Prepare the environment for dbt transformations
 

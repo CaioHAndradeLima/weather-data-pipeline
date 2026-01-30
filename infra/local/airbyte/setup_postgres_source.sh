@@ -5,13 +5,6 @@ set -e
 # Load .env
 # ---------------------------------------------------
 ENV_FILE="../../../.env"
-
-if [ ! -f "$ENV_FILE" ]; then
-  echo "❌ .env file not found at $ENV_FILE"
-  exit 1
-fi
-
-echo "📦 Loading env vars from $ENV_FILE"
 set -a
 source "$ENV_FILE"
 set +a
@@ -19,18 +12,17 @@ set +a
 
 AIRBYTE_BASE="http://localhost:8000"
 
-echo "⏳ Waiting for Airbyte..."
-until curl -s "$AIRBYTE_BASE/api/v1/health" | jq -e '.available == true' >/dev/null; do
-  sleep 5
-done
-echo "✅ Airbyte is ready"
+AUTH_HEADER=$(./login.sh)
+
 
 # ---------------------------------------------------
 # 1. Workspace ID (PUBLIC API)
 # ---------------------------------------------------
-echo "🔍 Fetching workspace ID (public API)..."
+echo ""
 
-WORKSPACE_RESPONSE=$(curl -s "$AIRBYTE_BASE/api/public/v1/workspaces")
+WORKSPACE_RESPONSE=$(curl -s "$AIRBYTE_BASE/api/public/v1/workspaces"  \
+-H "$AUTH_HEADER" \
+)
 echo "$WORKSPACE_RESPONSE" | jq . >/dev/null
 
 WORKSPACE_ID=$(echo "$WORKSPACE_RESPONSE" | jq -r '.data[0].workspaceId')
@@ -48,7 +40,8 @@ echo "WORKSPACE_ID=$WORKSPACE_ID"
 echo "🔍 Fetching Postgres sourceDefinitionId..."
 
 DEF_RESPONSE=$(curl -s -X POST "$AIRBYTE_BASE/api/v1/source_definitions/list" \
-  -H "Content-Type: application/json")
+  -H "Content-Type: application/json" \
+  -H "$AUTH_HEADER")
 
 echo "$DEF_RESPONSE" | jq . >/dev/null
 
@@ -69,6 +62,7 @@ echo "🚀 Creating Postgres CDC source..."
 
 CREATE_RESPONSE=$(curl -s -X POST "$AIRBYTE_BASE/api/v1/sources/create" \
   -H "Content-Type: application/json" \
+  -H "$AUTH_HEADER" \
   -d '{
     "name": "postgres_retail",
     "workspaceId": "'"$WORKSPACE_ID"'",

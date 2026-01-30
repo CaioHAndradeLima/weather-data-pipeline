@@ -3,30 +3,22 @@ set -e
 
 ENV_FILE="../../../.env"
 
-if [ ! -f "$ENV_FILE" ]; then
-  echo "❌ .env file not found at $ENV_FILE"
-  exit 1
-fi
-
 echo "📦 Loading env vars from $ENV_FILE"
 set -a
 source "$ENV_FILE"
 set +a
 
 AIRBYTE_BASE="http://localhost:8000"
-
-echo "⏳ Waiting for Airbyte..."
-until curl -s "$AIRBYTE_BASE/api/v1/health" | jq -e '.available == true' >/dev/null; do
-  sleep 5
-done
-echo "✅ Airbyte is ready"
+AUTH_HEADER=$(./login.sh)
 
 # ---------------------------------------------------
-# 1. Workspace ID (PUBLIC API — same as manual)
+# 1. Workspace ID (INTERNAL API)
 # ---------------------------------------------------
-echo "🔍 Fetching workspace ID (public API)..."
+echo ""
 
-WORKSPACE_RESPONSE=$(curl -s "$AIRBYTE_BASE/api/public/v1/workspaces")
+WORKSPACE_RESPONSE=$(curl -s "$AIRBYTE_BASE/api/public/v1/workspaces"  \
+-H "$AUTH_HEADER" \
+)
 echo "$WORKSPACE_RESPONSE" | jq . >/dev/null
 
 WORKSPACE_ID=$(echo "$WORKSPACE_RESPONSE" | jq -r '.data[0].workspaceId')
@@ -37,16 +29,16 @@ if [ -z "$WORKSPACE_ID" ] || [ "$WORKSPACE_ID" = "null" ]; then
 fi
 
 echo "WORKSPACE_ID=$WORKSPACE_ID"
-# save workspace id into .env
-sed -i.bak '/^WORKSPACE_ID=/d' "$ENV_FILE"
-echo "WORKSPACE_ID=$WORKSPACE_ID" >> $ENV_FILE
 
+sed -i.bak '/^WORKSPACE_ID=/d' "$ENV_FILE"
+echo "WORKSPACE_ID=$WORKSPACE_ID" >> "$ENV_FILE"
 # ---------------------------------------------------
 # 2. Snowflake destinationDefinitionId (CONFIG API)
 # ---------------------------------------------------
 echo "🔍 Fetching Snowflake destinationDefinitionId..."
 
 DEF_RESPONSE=$(curl -s -X POST "$AIRBYTE_BASE/api/v1/destination_definitions/list" \
+  -H "$AUTH_HEADER" \
   -H "Content-Type: application/json")
 
 echo "$DEF_RESPONSE" | jq . >/dev/null
@@ -68,6 +60,7 @@ echo "🚀 Creating Snowflake destination..."
 
 CREATE_RESPONSE=$(curl -s -X POST "$AIRBYTE_BASE/api/v1/destinations/create" \
   -H "Content-Type: application/json" \
+  -H "$AUTH_HEADER" \
   -d '{
     "name": "snowflake_retail",
     "workspaceId": "'"$WORKSPACE_ID"'",

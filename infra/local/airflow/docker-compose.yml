@@ -11,15 +11,14 @@ services:
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
+      test: [ "CMD", "pg_isready", "-U", "airflow" ]
       interval: 10s
       retries: 5
     restart: always
 
   airflow-init:
     build:
-      context: ${PROJECT_ROOT}
-      dockerfile: infra/local/airflow/Dockerfile
+      context: .
     env_file:
       - ${PROJECT_ROOT}/.env
     depends_on:
@@ -31,7 +30,7 @@ services:
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     command: >
       bash -c "
-      airflow db migrate && airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com && chmod +x /opt/airflow/init_connections.sh && /opt/airflow/init_connections.sh;
+      airflow db migrate && airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com && chmod +x /opt/airflow/init_connections.sh; /opt/airflow/init_connections.sh; python -m pip install --upgrade pip; python -m pip install dbt-core dbt-snowflake;
       "
     volumes:
       - ${PROJECT_ROOT}/infra/local/airflow/init_connections.sh:/opt/airflow/init_connections.sh
@@ -40,8 +39,7 @@ services:
     env_file:
       - ${PROJECT_ROOT}/.env
     build:
-      context: ${PROJECT_ROOT}
-      dockerfile: infra/local/airflow/Dockerfile
+      context: .
     depends_on:
       postgres-airflow:
         condition: service_healthy
@@ -60,26 +58,14 @@ services:
     ports:
       - "8081:8080"
     restart: always
-    command: >
-      bash -c "
-      python -m pip install --upgrade pip &&
-      python -m pip install dbt-core dbt-snowflake &&
-      airflow webserver
-      "
+    command: webserver
 
   airflow-scheduler:
     env_file:
       - ${PROJECT_ROOT}/.env
     build:
-      context: ${PROJECT_ROOT}
-      dockerfile: infra/local/airflow/Dockerfile
-    command: >
-      bash -c "
-      python -m pip install --upgrade pip &&
-      python -m pip install dbt-core dbt-snowflake &&
-      airflow scheduler
-      "
-
+      context: .
+    command: scheduler
     depends_on:
       postgres-airflow:
         condition: service_healthy

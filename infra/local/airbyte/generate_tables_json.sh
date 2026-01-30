@@ -1,12 +1,7 @@
 #!/bin/bash
 set -e
-
 ENV_FILE="../../../.env"
-
-if [ ! -f "$ENV_FILE" ]; then
-  echo "ERROR: .env file not found at $ENV_FILE"
-  exit 1
-fi
+AUTH_HEADER=$(./login.sh)
 
 echo "Loading env vars from $ENV_FILE"
 set -a
@@ -25,6 +20,7 @@ fi
 echo "Discovering schema from Airbyte..."
 DISCOVER_RESPONSE=$(curl -s -X POST "$AIRBYTE_BASE/sources/discover_schema" \
   -H "Content-Type: application/json" \
+  -H "$AUTH_HEADER" \
   -d "{\"sourceId\":\"$SOURCE_ID\"}")
 
 CATALOG=$(echo "$DISCOVER_RESPONSE" | jq '.catalog')

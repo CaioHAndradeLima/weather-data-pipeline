@@ -2,15 +2,13 @@ FROM apache/airflow:2.8.1-python3.10
 
 USER root
 
+# Install system dependencies if needed later
 RUN apt-get update && apt-get install -y \
     gcc \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get clean
 
 USER airflow
 
+# Install Python dependencies
 COPY requirements.txt /requirements.txt
-
-RUN python -m pip install --upgrade pip \
-    && python -m pip install --no-cache-dir -r /requirements.txt \
-    && python -m pip install dbt-core dbt-snowflake
+RUN pip install --no-cache-dir -r /requirements.txt
