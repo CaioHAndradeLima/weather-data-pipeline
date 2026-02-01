@@ -9,9 +9,11 @@ services:
       - "-c"
       - "wal_level=logical"
       - "-c"
-      - "max_replication_slots=10"
+      - "max_replication_slots=20"
       - "-c"
-      - "max_wal_senders=10"
+      - "max_wal_senders=20"
+      - "-c"
+      - "wal_keep_size=512MB"
 
     environment:
       POSTGRES_DB: retail_prod

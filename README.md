@@ -426,3 +426,19 @@ dbt Cosmos if needed.
 The project is fully functional and demonstrates end-to-end ingestion, transformation, and analytics using both batch
 and CDC data flows. Ongoing improvements focus on hardening CDC ingestion and improving observability.
 
+## Sensors planing
+
+```bash
+
+list_connections
+        |
+   ┌───────────────┐
+   │  connection A │─── sync ── sensor
+   └───────────────┘
+   ┌───────────────┐
+   │  connection B │─── sync ── sensor
+   └───────────────┘
+   ┌───────────────┐
+   │  connection C │─── sync ── sensor
+   └───────────────┘
+```

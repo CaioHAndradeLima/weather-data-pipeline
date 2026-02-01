@@ -7,6 +7,9 @@ from airflow.models.param import Param
 from dotenv import load_dotenv
 from airflow.providers.airbyte.operators.airbyte import AirbyteTriggerSyncOperator
 from airflow.providers.airbyte.sensors.airbyte import AirbyteJobSensor
+from airflow.utils.trigger_rule import TriggerRule
+from airflow.decorators import task_group
+from datetime import timedelta
 
 from src.ingestion.airbyte.client import AirbyteClient
 from src.ingestion.airbyte.discovery import discover_connections
@@ -20,7 +23,7 @@ load_dotenv()
     schedule="@daily",
     catchup=False,
     tags=["bronze", "airbyte"],
-    max_active_tasks=2,
+    max_active_tasks=1,
     default_args={"owner": "airflow"},
     params={
         "tables": Param(
@@ -46,22 +49,30 @@ def postgres_to_snowflake_bronze():
 
     connection_ids = list_connections()
 
-    airbyte_sync = AirbyteTriggerSyncOperator.partial(
-        task_id="airbyte_sync",
-        airbyte_conn_id="airbyte_default",
-        asynchronous=True,
-    ).expand(
-        connection_id=connection_ids
-    )
+    @task_group()
+    def airbyte_connection_group(connection_id: str):
+        sync = AirbyteTriggerSyncOperator(
+            task_id="sync",
+            airbyte_conn_id="airbyte_default",
+            connection_id=connection_id,
+            asynchronous=True,
+            pool="airbyte_sequential",
+        )
 
-    airbyte_sensor = AirbyteJobSensor.partial(
-        task_id="airbyte_sensor",
-        airbyte_conn_id="airbyte_default",
-    ).expand(
-        airbyte_job_id=airbyte_sync.output
-    )
+        sensor = AirbyteJobSensor(
+            task_id="sensor",
+            airbyte_conn_id="airbyte_default",
+            airbyte_job_id=sync.output,
+            pool="airbyte_sequential",
+            poke_interval= 30,
+            timeout=60 * 60 * 60,
+            retries=5,
+            retry_delay= timedelta(minutes=5),
+        )
 
-    airbyte_sync >> airbyte_sensor
+        sync >> sensor
+
+    airbyte_connection_group.expand(connection_id=connection_ids)
 
 
 dag = postgres_to_snowflake_bronze()
