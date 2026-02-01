@@ -25,7 +25,7 @@ models:
         tests:
           - not_null
 
-      - name: last_updated_at
+      - name: last_ingested_at
         description: "Timestamp of the latest payment event"
         tests:
           - not_null

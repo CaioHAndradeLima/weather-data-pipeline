@@ -8,7 +8,7 @@ select
     o.last_updated_at,
 
     c.customer_id,
-    c.name as customer_name,
+    c.full_name as customer_name,
     c.country,
 
     p.payment_status,

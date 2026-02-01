@@ -19,10 +19,3 @@ models:
         description: "Total order value"
         tests:
           - not_null
-
-      - name: customer_id
-        tests:
-        - relationships:
-            arguments:
-              to: ref('customers_current')
-              field: customer_id

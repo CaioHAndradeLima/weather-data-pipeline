@@ -25,7 +25,7 @@ models:
         tests:
           - not_null
 
-      - name: last_snapshot_date
+      - name: last_updated_at
         description: "Date of the latest snapshot"
         tests:
           - not_null

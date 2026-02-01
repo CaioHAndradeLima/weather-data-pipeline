@@ -9,18 +9,17 @@ with ranked_events as (
         payment_method,
         amount,
         currency,
-        event_timestamp,
-        ingested_at,
+        updated_at,
 
         row_number() over (
             partition by payment_id
-            order by ingested_at desc
+            order by updated_at desc
         ) as rn
 
-    from {{ source('bronze', 'PAYMENT_EVENTS') }}
+    from {{ source('bronze', 'PAYMENTS') }}
 
     {% if is_incremental() %}
-        where ingested_at > (select max(last_ingested_at) from {{ this }})
+        where updated_at > (select max(last_ingested_at) from {{ this }})
     {% endif %}
 )
 
@@ -31,8 +30,7 @@ select
     payment_method,
     amount,
     currency,
-    event_timestamp as last_updated_at,
-    ingested_at as last_ingested_at
+    updated_at as last_ingested_at
 
 from ranked_events
 where rn = 1

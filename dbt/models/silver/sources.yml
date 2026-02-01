@@ -5,8 +5,8 @@ sources:
     database: RETAIL_ANALYTICS
     schema: BRONZE
     tables:
-      - name: ORDER_EVENTS
-      - name: PAYMENT_EVENTS
-      - name: SHIPMENT_EVENTS
-      - name: CUSTOMERS_SNAPSHOT
-      - name: PRODUCTS_SNAPSHOT
+      - name: ORDERS
+      - name: PAYMENTS
+      - name: SHIPMENTS
+      - name: CUSTOMERS
+      - name: PRODUCTS

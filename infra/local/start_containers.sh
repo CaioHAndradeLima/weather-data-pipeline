@@ -27,6 +27,8 @@ cd airbyte;
 ./generate_tables_json.sh
 ./create_connections.sh
 
+
+
 cd ..;
 cd airflow;
 docker compose \

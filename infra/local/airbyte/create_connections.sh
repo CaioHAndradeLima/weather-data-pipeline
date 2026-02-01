@@ -123,6 +123,9 @@ for i in $(seq 0 $((CONNECTION_COUNT - 1))); do
         \"sourceId\": \"$SOURCE_ID\",
         \"destinationId\": \"$DESTINATION_ID\",
         \"status\": \"$CONNECTION_STATUS\",
+        \"namespaceDefinition\": \"destination\",
+        \"namespaceFormat\": null,
+        \"status\": \"$CONNECTION_STATUS\",
         \"syncCatalog\": { \"streams\": $STREAMS }
       }")
 
@@ -141,7 +144,10 @@ for i in $(seq 0 $((CONNECTION_COUNT - 1))); do
       -H "$AUTH_HEADER" \
       -d "{
         \"connectionId\": \"$CONNECTION_ID\",
-        \"syncCatalog\": { \"streams\": $STREAMS }
+        \"syncCatalog\": { \"streams\": $STREAMS },
+        \"namespaceDefinition\": \"destination\",
+        \"namespaceFormat\": null
+
       }" >/dev/null
   fi
 

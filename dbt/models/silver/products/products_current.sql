@@ -8,17 +8,17 @@ with ranked_snapshots as (
         category,
         price,
         active,
-        snapshot_date,
+        updated_at,
 
         row_number() over (
             partition by product_id
-            order by snapshot_date desc
+            order by updated_at desc
         ) as rn
 
-    from {{ source('bronze', 'PRODUCTS_SNAPSHOT') }}
+    from {{ source('bronze', 'PRODUCTS') }}
 
     {% if is_incremental() %}
-        where snapshot_date > (select max(last_snapshot_date) from {{ this }})
+        where updated_at > (select max(last_updated_at) from {{ this }})
     {% endif %}
 
 )
@@ -29,7 +29,7 @@ select
     category,
     price,
     active,
-    snapshot_date as last_snapshot_date
+    updated_at as last_updated_at
 
 from ranked_snapshots
 where rn = 1

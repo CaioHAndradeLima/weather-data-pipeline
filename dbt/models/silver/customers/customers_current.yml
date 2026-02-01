@@ -10,7 +10,7 @@ models:
           - not_null
           - unique
 
-      - name: name
+      - name: full_name
         description: "Customer full name"
         tests:
           - not_null
@@ -20,7 +20,7 @@ models:
         tests:
           - not_null
 
-      - name: last_snapshot_date
+      - name: last_updated_at
         description: "Date of the latest snapshot"
         tests:
           - not_null

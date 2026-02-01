@@ -7,17 +7,17 @@ with ranked_events as (
         order_id,
         shipment_status,
         carrier,
-        event_timestamp,
+        updated_at,
 
         row_number() over (
             partition by shipment_id
-            order by event_timestamp desc
+            order by updated_at desc
         ) as rn
 
-    from {{ source('bronze', 'SHIPMENT_EVENTS') }}
+    from {{ source('bronze', 'SHIPMENTS') }}
 
     {% if is_incremental() %}
-        where event_timestamp > (select max(last_updated_at) from {{ this }})
+        where updated_at > (select max(last_updated_at) from {{ this }})
     {% endif %}
 )
 
@@ -26,7 +26,7 @@ select
     order_id,
     shipment_status,
     carrier,
-    event_timestamp as last_updated_at
+    updated_at as last_updated_at
 
 from ranked_events
 where rn = 1

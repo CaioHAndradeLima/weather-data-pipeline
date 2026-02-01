@@ -28,6 +28,7 @@ infra/local/airflow/logs/
 infra/local/airflow/.airflow/
 infra/local/airflow/__pycache__/
 infra/local/airflow/.airflow-logs
+infra/local/airflow/.env
 
 # Docker
 docker-data/

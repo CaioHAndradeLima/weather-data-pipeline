@@ -4,23 +4,23 @@ with ranked_snapshots as (
 
     select
         customer_id,
-        name,
+        full_name,
         email,
         country,
         created_at,
-        snapshot_date,
+        updated_at,
 
         row_number() over (
             partition by customer_id
-            order by snapshot_date desc
+            order by updated_at desc
         ) as rn
 
-    from {{ source('bronze', 'CUSTOMERS_SNAPSHOT') }}
+    from {{ source('bronze', 'CUSTOMERS') }}
 
     {% if is_incremental() %}
-        where snapshot_date >
+        where updated_at >
             (
-                select coalesce(max(last_snapshot_date), '1900-01-01')
+                select coalesce(max(last_updated_at), '1900-01-01')
                 from {{ this }}
             )
     {% endif %}
@@ -29,11 +29,11 @@ with ranked_snapshots as (
 
 select
     customer_id,
-    name,
+    full_name,
     email,
     country,
     created_at,
-    snapshot_date as last_snapshot_date
+    updated_at as last_updated_at
 
 from ranked_snapshots
 where rn = 1
