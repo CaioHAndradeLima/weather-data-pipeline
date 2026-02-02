@@ -20,5 +20,3 @@ airflow connections add airbyte_default \
   --conn-password $AIRBYTE_CLIENT_SECRET \
 
 echo "Airflow Airbyte connection created successfully!"
-
-airflow pools set airbyte_sequential 1 "Run Airbyte syncs one at a time"
