@@ -3,7 +3,7 @@ set -e
 
 ENV_FILE="../../../.env"
 
-echo "🚀 Running Airbyte instance setup..."
+echo "Running Airbyte instance setup..."
 
 
 SETUP_RESPONSE=$(curl -s -X POST \
@@ -18,13 +18,13 @@ SETUP_RESPONSE=$(curl -s -X POST \
     "displaySetupWizard": false
   }')
 
-echo "📡 Setup response:"
+echo "Setup response:"
 echo "$SETUP_RESPONSE"
 
-echo "🔐 Generating API credentials..."
+echo "Generating API credentials..."
 
 CREDS_RESPONSE=$(abctl local credentials)
-echo "📡 Credentials response:"
+echo "Credentials response:"
 echo "$CREDS_RESPONSE"
 
 CLEAN_RESPONSE=$(echo "$CREDS_RESPONSE" | sed 's/\x1b\[[0-9;]*m//g')
