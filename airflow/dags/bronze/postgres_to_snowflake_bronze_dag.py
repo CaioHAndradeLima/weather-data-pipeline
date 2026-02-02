@@ -37,4 +37,6 @@ with DAG(
 
     connections = list_connections()
 
-    start >> airbyte_connection_group.expand_kwargs(connections) >> end
+    mapped_airbyte_group = airbyte_connection_group.expand_kwargs(connections)
+
+    start >> connections >> mapped_airbyte_group >> end
