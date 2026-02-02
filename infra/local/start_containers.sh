@@ -26,7 +26,7 @@ cd airbyte;
 ./setup_credentials.sh
 ./setup_postgres_source.sh
 ./setup_snowflake_destination.sh
-./generate_ingestion.json.sh
+./generate_ingestion_json.sh
 ./create_connections.sh
 
 
