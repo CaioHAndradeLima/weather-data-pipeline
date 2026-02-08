@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: weather_daily_rain
+    description: Daily rain and precipitation summary per station
+    columns:
+      - name: station_id
+        tests: [not_null]
+      - name: observation_date
+        tests: [not_null]
+
+  - name: weather_monthly_precipitation
+    description: Monthly precipitation totals per station
+    columns:
+      - name: station_id
+        tests: [not_null]
+      - name: month
+        tests: [not_null]
+
+  - name: weather_rainy_days_monthly
+    description: Count of rainy days per month across NYC region
+    columns:
+      - name: month
+        tests: [not_null]

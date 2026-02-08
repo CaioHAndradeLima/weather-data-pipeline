@@ -1,12 +1,10 @@
-import os
 import json
-import logging
-from datetime import datetime
+import os
 from typing import List
 
-import requests
 import psycopg2
 import psycopg2.extras
+import requests
 
 # =========================
 # CONFIG
