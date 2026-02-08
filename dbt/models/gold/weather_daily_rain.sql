@@ -11,7 +11,7 @@ select
     station_name,
     observation_date,
 
-    bool_or(is_raining) as was_raining,
+    max(iff(is_raining, 1, 0)) = 1 as was_raining,
     sum(coalesce(precipitation_last_3h_mm, 0)) as total_precip_mm,
 
     min(observation_time_utc) as first_observation,

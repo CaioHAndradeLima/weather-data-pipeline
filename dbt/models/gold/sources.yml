@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: gold
+    database: WEATHER_ANALYTICS
+    schema: GOLD
+    tables:
+      - name: weather_daily_rain
+      - name: weather_monthly_precipitation
+      - name: weather_rainy_days_monthly

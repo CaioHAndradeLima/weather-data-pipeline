@@ -12,7 +12,7 @@ select
 
     sum(total_precip_mm) as monthly_precip_mm,
     count(*) as days_with_data,
-    count(*) filter (where was_raining) as rainy_days
+    sum(iff(was_raining, 1, 0)) as rainy_days
 
 from {{ ref('weather_daily_rain') }}
 

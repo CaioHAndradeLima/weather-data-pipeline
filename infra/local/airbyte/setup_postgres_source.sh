@@ -70,10 +70,10 @@ CREATE_RESPONSE=$(curl -s -X POST "$AIRBYTE_BASE/api/v1/sources/create" \
     "connectionConfiguration": {
       "host": "host.docker.internal",
       "port": 5433,
-      "database": "retail_prod",
+      "database": "weather",
       "username": "airbyte",
       "password": "airbyte_pass",
-      "schemas": ["public","retail"],
+      "schemas": ["public","weather"],
       "ssl_mode": {
         "mode": "disable"
       },

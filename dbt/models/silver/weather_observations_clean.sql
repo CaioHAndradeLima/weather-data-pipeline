@@ -24,10 +24,10 @@ with base as (
 
         precipitation_last_3h_mm,
 
-        -- Derived fields
-        coalesce(precipitation_last_3h_mm, 0) > 0
-            or weather_description ilike '%rain%'
-            as is_raining,
+        (
+          coalesce(precipitation_last_3h_mm, 0) > 0
+          OR coalesce(weather_description, '') ilike '%rain%'
+        ) as is_raining,
 
         weather_description,
 
@@ -37,7 +37,7 @@ with base as (
 
         ingested_at
 
-    from {{ ref('weather_observations') }}
+    from {{ ref('observations') }}
 
     where observation_time is not null
 )

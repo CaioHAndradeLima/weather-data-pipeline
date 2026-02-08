@@ -10,12 +10,12 @@ with region_daily as (
 
     select
         observation_date,
-        bool_or(was_raining) as region_was_raining
+        max(iff(was_raining, 1, 0)) = 1 as region_was_raining
     from {{ ref('weather_daily_rain') }}
 
     {% if is_incremental() %}
     where observation_date >= (
-        select min(month) from {{ this }}
+        select max(month) from {{ this }}
     )
     {% endif %}
 
@@ -24,7 +24,7 @@ with region_daily as (
 
 select
     date_trunc('month', observation_date) as month,
-    count(*) filter (where region_was_raining) as rainy_days_in_month,
+    sum(iff(region_was_raining, 1, 0)) as rainy_days_in_month,
     count(*) as total_days_observed
 
 from region_daily

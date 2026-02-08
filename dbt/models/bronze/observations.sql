@@ -19,4 +19,4 @@ select
     elevation_m,
     payload,
     ingested_at
-from weather.observations
+from weather.bronze.observations
