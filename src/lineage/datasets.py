@@ -1,5 +1,5 @@
 from airflow.datasets import Dataset
 
-RETAIL_BRONZE = Dataset("snowflake://Retail/Bronze")
-RETAIL_SILVER = Dataset("snowflake://Retail/Silver")
-RETAIL_GOLD = Dataset("snowflake://Retail/Gold")
+WEATHER_BRONZE = Dataset("snowflake://Weather/Bronze")
+WEATHER_SILVER = Dataset("snowflake://Weather/Silver")
+WEATHER_GOLD = Dataset("snowflake://Weather/Gold")

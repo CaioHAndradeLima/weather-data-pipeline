@@ -1,6 +1,6 @@
 
-resource "snowflake_warehouse" "retail_wh" {
-  name           = "RETAIL_WH"
+resource "snowflake_warehouse" "weather_wh" {
+  name           = "WEATHER_WH"
   warehouse_size = "XSMALL"
 
   auto_suspend = 60
@@ -8,5 +8,5 @@ resource "snowflake_warehouse" "retail_wh" {
 
   initially_suspended = true
 
-  comment = "Warehouse for retail data pipeline (ingestion + analytics)"
+  comment = "Warehouse for weather data pipeline (ingestion + analytics)"
 }

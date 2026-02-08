@@ -14,12 +14,14 @@ cd airbyte;
 ./start_airbyte.sh
 cd ..;
 
+cd postgres;
 # Starting postgres and CDC connectors
 docker compose \
-  --env-file ../../.env \
-  -f postgres/docker-compose.yml \
+  --env-file ../../../.env \
+  -f docker-compose.yml \
   up -d
 
+cd ..
 # airbyte set up
 cd airbyte;
 

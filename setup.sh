@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
-echo "Setting up local environment for Retail Data Pipeline"
+echo "Setting up local environment for Weather Data Pipeline"
 echo ""
 
 ENV_FILE=".env"
-SNOWFLAKE_WAREHOUSE=RETAIL_WH
-SNOWFLAKE_DATABASE=RETAIL_ANALYTICS
+SNOWFLAKE_WAREHOUSE=WEATHER_WH
+SNOWFLAKE_DATABASE=WEATHER_ANALYTICS
 SNOWFLAKE_ROLE=ACCOUNTADMIN
 SNOWFLAKE_SCHEMA=BRONZE
 # Helper function to ask for input
@@ -73,12 +73,12 @@ PROJECT_ROOT_DIRECTORY="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "PROJECT_ROOT=$PROJECT_ROOT_DIRECTORY" >> .env
 
 
-# Postgres retail (CDC + incremental reads)
-echo "RETAIL_PG_HOST=local-postgres" >> .env
-echo "RETAIL_PG_PORT=5432" >> .env
-echo "RETAIL_PG_DB=retail_prod" >> .env
-echo "RETAIL_PG_USER=retail_user" >> .env
-echo "RETAIL_PG_PASSWORD=retail_password" >> .env
+# Postgres weather (CDC + incremental reads)
+echo "WEATHER_PG_HOST=local-postgres" >> .env
+echo "WEATHER_PG_PORT=5432" >> .env
+echo "WEATHER_PG_DB=weather_prod" >> .env
+echo "WEATHER_PG_USER=weather_user" >> .env
+echo "WEATHER_PG_PASSWORD=weather_password" >> .env
 
 echo ""
 echo ".env file successfully created!"
@@ -87,7 +87,7 @@ DBT_DIR="dbt"
 DBT_PROFILES_FILE="$DBT_DIR/profiles.yml"
 
 cat > "$DBT_PROFILES_FILE" <<EOF
-retail_pipeline:
+weather_pipeline:
   target: dev
   outputs:
     dev:
@@ -129,13 +129,17 @@ echo "Role: TERRAFORM_ROLE"
 echo "Switching Terraform authentication to TERRAFORM_USER"
 
 SNOWFLAKE_ACCOUNT_FULL="$SNOWFLAKE_ACCOUNT"
-IFS='.' read -r SNOWFLAKE_ACCOUNT_LOCATOR SNOWFLAKE_REGION CLOUD <<< "$SNOWFLAKE_ACCOUNT_FULL"
+IFS='-' read -r SNOWFLAKE_COMPANY SNOWFLAKE_ACCOUNT <<< "$SNOWFLAKE_ACCOUNT_FULL"
 
-export TF_VAR_snowflake_account="$SNOWFLAKE_ACCOUNT_LOCATOR"
-export TF_VAR_snowflake_region="$SNOWFLAKE_REGION.$CLOUD"
-export TF_VAR_snowflake_user="TERRAFORM_USER"
-export TF_VAR_snowflake_password="STRONG_P@SSW0RD123"
-export TF_VAR_snowflake_role="TERRAFORM_ROLE"
+export TF_VAR_snowflake_account_name="$SNOWFLAKE_ACCOUNT"
+export TF_VAR_snowflake_organization_name="$SNOWFLAKE_COMPANY"
+export TF_VAR_snowflake_region="AWS_SA_EAST_1"
+#export TF_VAR_snowflake_user="TERRAFORM_USER"
+export TF_VAR_snowflake_user="$SNOWFLAKE_USER"
+#export TF_VAR_snowflake_password="STRONG_P@SSW0RD123"
+export TF_VAR_snowflake_password="$SNOWFLAKE_PASSWORD"
+#export TF_VAR_snowflake_role="TERRAFORM_ROLE"
+export TF_VAR_snowflake_role="ACCOUNTADMIN"
 
 echo "Creating snowflake remote environment"
 
@@ -144,16 +148,16 @@ cd ./infra/remote/snowflake
 terraform init
 
 # Import warehouse if not already managed
-if ! terraform state show snowflake_warehouse.retail_wh >/dev/null 2>&1; then
-  echo "Importing warehouse RETAIL_WH"
-  terraform import snowflake_warehouse.retail_wh RETAIL_WH
-  terraform import snowflake_database.retail_analytics RETAIL_ANALYTICS
-  terraform import snowflake_schema.bronze "RETAIL_ANALYTICS.BRONZE"
-  terraform import snowflake_schema.silver "RETAIL_ANALYTICS.SILVER"
-  terraform import snowflake_schema.gold   "RETAIL_ANALYTICS.GOLD"
+if ! terraform state show snowflake_warehouse.weather_wh >/dev/null 2>&1; then
+  echo "Importing warehouse WEATHER_WH"
+  terraform import snowflake_warehouse.weather_wh WEATHER_WH
+  terraform import snowflake_database.weather_analytics WEATHER_ANALYTICS
+  terraform import snowflake_schema.bronze "WEATHER_ANALYTICS.BRONZE"
+  terraform import snowflake_schema.silver "WEATHER_ANALYTICS.SILVER"
+  terraform import snowflake_schema.gold   "WEATHER_ANALYTICS.GOLD"
 
 else
-  echo "Warehouse RETAIL_WH already managed by Terraform"
+  echo "Warehouse WEATHER_WH already managed by Terraform"
 fi
 
 terraform plan

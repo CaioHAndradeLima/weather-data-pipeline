@@ -62,7 +62,7 @@ CREATE_RESPONSE=$(curl -s -X POST "$AIRBYTE_BASE/api/v1/destinations/create" \
   -H "Content-Type: application/json" \
   -H "$AUTH_HEADER" \
   -d '{
-    "name": "snowflake_retail",
+    "name": "snowflake_weather",
     "workspaceId": "'"$WORKSPACE_ID"'",
     "destinationDefinitionId": "'"$SNOWFLAKE_DEF_ID"'",
     "connectionConfiguration": {

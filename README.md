@@ -1,6 +1,6 @@
-# Retail Data Pipeline
+# Weather Data Pipeline
 
-[![Retail Data Pipeline](https://github.com/CaioHAndradeLima/retail-data-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/CaioHAndradeLima/retail-data-pipeline/actions/workflows/ci.yml)
+[![Weather Data Pipeline](https://github.com/CaioHAndradeLima/retail-data-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/CaioHAndradeLima/retail-data-pipeline/actions/workflows/ci.yml)
 
 > Generate a production‑grade, data‑driven ELT platform built from scratch only passing your snowflake credentials using
 > setup.sh
@@ -105,7 +105,7 @@ with DAG(
     # Start Silver dbt 
     end = EmptyOperator(
         task_id="Trigger_DBT_Silver",
-        outlets=[RETAIL_BRONZE],
+        outlets=[WEATHER_BRONZE],
     )
 ```
 ### Airflow Graph
@@ -155,7 +155,7 @@ BI / Analytics  ◄───────────┘
 ---
 ## Continuous integration Flow
 
-[![Retail Data Pipeline](https://github.com/CaioHAndradeLima/retail-data-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/CaioHAndradeLima/retail-data-pipeline/actions/workflows/ci.yml)
+[![Weather Data Pipeline](https://github.com/CaioHAndradeLima/retail-data-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/CaioHAndradeLima/retail-data-pipeline/actions/workflows/ci.yml)
 
 ```bash
 Steps
@@ -285,7 +285,7 @@ init_connections.sh             │
    ├── add airbyte connection   │
    │                            │
    ▼                            │
-Start Retail Pipeline           │
+Start Weather Pipeline           │
    ├── Bronze                   │
    ├── Silver                   │
    ├── Gold                     │
@@ -293,7 +293,7 @@ Start Retail Pipeline           │
 Data Available  ◄───────────────┘
 ```
 
-## Retail Business Questions
+## Weather Business Questions
 
 The postgres used has tables and data designed to answer typical retail business questions such as:
 

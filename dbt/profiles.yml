@@ -1,13 +1,13 @@
-retail_pipeline:
+weather_pipeline:
   target: dev
   outputs:
     dev:
       type: snowflake
-      account: YS80657.us-east-2.aws
+      account: vvyellg-cr56839
       user: CAIOHANDRADELIMA
       password: Otr@conta1Health
       role: ACCOUNTADMIN
-      warehouse: RETAIL_WH
-      database: RETAIL_ANALYTICS
+      warehouse: WEATHER_WH
+      database: WEATHER_ANALYTICS
       schema: BRONZE
       threads: 4

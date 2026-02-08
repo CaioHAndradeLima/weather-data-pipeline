@@ -4,12 +4,12 @@ resource "aws_vpc" "this" {
   enable_dns_hostnames = true
 
   tags = {
-    Name = "retail-prod-vpc"
+    Name = "weather-prod-vpc"
   }
 }
 
 resource "aws_security_group" "postgres" {
-  name        = "retail-postgres-sg"
+  name        = "weather-postgres-sg"
   description = "Security group for Postgres RDS"
   vpc_id      = aws_vpc.this.id
 
@@ -29,12 +29,12 @@ resource "aws_security_group" "postgres" {
   }
 
   tags = {
-    Name = "retail-postgres-sg"
+    Name = "weather-postgres-sg"
   }
 }
 
 resource "aws_db_instance" "postgres" {
-  identifier = "retail-prod-postgres"
+  identifier = "weather-prod-postgres"
 
   engine         = "postgres"
   engine_version = "17.7"
@@ -56,6 +56,6 @@ resource "aws_db_instance" "postgres" {
   multi_az            = false
 
   tags = {
-    Name = "retail-prod-postgres"
+    Name = "weather-prod-postgres"
   }
 }

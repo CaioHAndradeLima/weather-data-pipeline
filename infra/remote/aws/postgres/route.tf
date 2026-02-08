@@ -7,7 +7,7 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = "retail-public-rt"
+    Name = "weather-public-rt"
   }
 }
 
