@@ -1,46 +1,7 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
-# permission to execute airbyte scripts
-chmod +x ./airbyte/create_connections.sh
-chmod +x ./airbyte/setup_postgres_source.sh
-chmod +x ./airbyte/setup_snowflake_destination.sh
-chmod +x ./airbyte/generate_ingestion_json.sh
-chmod +x ./airbyte/setup_credentials.sh
-chmod +x ./airbyte/start_airbyte.sh
-chmod +x ./airbyte/login.sh
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-cd airbyte;
-./start_airbyte.sh
-cd ..;
-
-cd postgres;
-# Starting postgres and CDC connectors
-docker compose \
-  --env-file ../../../.env \
-  -f docker-compose.yml \
-  up -d
-
-cd ..
-# airbyte set up
-cd airbyte;
-
-./setup_credentials.sh
-./setup_postgres_source.sh
-./setup_snowflake_destination.sh
-./generate_ingestion_json.sh
-./create_connections.sh
-
-
-
-cd ..;
-cd airflow;
-docker compose \
-  --env-file ../../../.env \
-  -f docker-compose.yml \
-  up -d
-cd ..;
-
-# Logging airflow user
-echo "Airflow user: admin password: admin"
-
+bash "$PROJECT_ROOT/scripts/infra/start_local_infra.sh"

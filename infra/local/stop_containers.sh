@@ -1,12 +1,7 @@
 #!/bin/bash
+set -euo pipefail
 
-abctl local uninstall
-rm -rf ~/.airbyte/abctl/data
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-docker compose \
-  -f postgres/docker-compose.yml \
-  down -v
-
-docker compose \
-  -f airflow/docker-compose.yml \
-  down -v
+bash "$PROJECT_ROOT/scripts/infra/stop_local_infra.sh"
