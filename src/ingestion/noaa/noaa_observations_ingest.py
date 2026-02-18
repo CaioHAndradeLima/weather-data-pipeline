@@ -27,6 +27,7 @@ REQUEST_HEADERS = {
 # HTTP CLIENT
 # =========================
 
+
 def fetch_observations(station_id: str) -> List[dict]:
     url = f"{NOAA_BASE_URL}/stations/{station_id}/observations"
     resp = requests.get(url, headers=REQUEST_HEADERS, timeout=30)
@@ -37,6 +38,7 @@ def fetch_observations(station_id: str) -> List[dict]:
 # =========================
 # PARSING
 # =========================
+
 
 def parse_feature(feature: dict) -> dict:
     props = feature["properties"]
@@ -49,26 +51,19 @@ def parse_feature(feature: dict) -> dict:
         "station_id": props["stationId"],
         "station_name": props.get("stationName"),
         "observation_time": props["timestamp"],
-
         "temperature_c": val(props.get("temperature")),
         "dewpoint_c": val(props.get("dewpoint")),
         "relative_humidity": val(props.get("relativeHumidity")),
-
         "wind_direction_deg": val(props.get("windDirection")),
         "wind_speed_kmh": val(props.get("windSpeed")),
         "wind_gust_kmh": val(props.get("windGust")),
-
         "barometric_pressure_pa": val(props.get("barometricPressure")),
         "visibility_m": val(props.get("visibility")),
-
         "precipitation_last_3h_mm": val(props.get("precipitationLast3Hours")),
-
         "weather_description": props.get("textDescription"),
-
         "longitude": coords[0],
         "latitude": coords[1],
         "elevation_m": val(props.get("elevation")),
-
         "payload": json.dumps(props),
     }
 
@@ -136,6 +131,7 @@ def insert_rows(rows: List[dict]):
 # ingest_noaa_observations
 # =========================
 
+
 def ingest_noaa_observations():
     total_inserted = 0
 
@@ -146,4 +142,3 @@ def ingest_noaa_observations():
 
         insert_rows(rows)
         total_inserted += len(rows)
-
