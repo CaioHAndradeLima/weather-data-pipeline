@@ -2,7 +2,7 @@
 
 [![Weather Data Pipeline](https://github.com/CaioHAndradeLima/retail-data-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/CaioHAndradeLima/retail-data-pipeline/actions/workflows/ci.yml)
 
-> Build a production-style ELT platform that ingests NOAA weather observations for New York stations and publishes rain analytics in Snowflake.
+> Build a production-style ELT platform that ingests NOAA weather observations for New York stations and publishes rain analytics in Snowflake, so you can track rainy days per month, power forecasting models, and detect when rain starts in near real time.
 
 ### No UI Clicks ever.
 
