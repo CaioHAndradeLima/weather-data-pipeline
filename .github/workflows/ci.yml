@@ -117,4 +117,5 @@ jobs:
       - name: DBT compile
         run: |
           cd dbt
+          dbt deps
           dbt compile --profiles-dir .
